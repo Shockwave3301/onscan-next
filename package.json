@@ -27,7 +27,16 @@
         "barcode",
         "RFID",
         "scanner",
-        "scan"
+        "scan",
+        "onscan",
+        "onscan.js",
+        "barcode-scanner",
+        "keyboard-wedge",
+        "hid",
+        "typescript",
+        "react",
+        "vue",
+        "angular"
     ],
     "author": "Shakhbulat Gazgireev",
     "license": "MIT",
