@@ -71,3 +71,18 @@ document.addEventListener('scanError', (e) => {
 document.body.addEventListener('scan', (e) => {
     const code: string = e.detail.scanCode;
 });
+document.addEventListener('scanButtonLongPress', (e) => {
+    const noDetail: null = e.detail;
+});
+document.body.addEventListener('scanButtonLongPress', (e) => {
+    const noDetail: null = e.detail;
+});
+
+// onScanButtonLongPress gets the attached element as `this` and as its argument
+onScan.attachTo(document.body, {
+    scanButtonKeyCode: 113,
+    onScanButtonLongPress(oDomElement) {
+        const el: Element = oDomElement;
+        const self: Element = this;
+    },
+});

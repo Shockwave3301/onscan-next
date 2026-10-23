@@ -32,7 +32,7 @@ npm install onscan-next
 
 - All eight methods keep their names and arguments: `attachTo`, `detachFrom`, `simulate`, `setOptions`, `getOptions`, `decodeKeyEvent`, `isAttachedTo`, `isScanInProgressFor`.
 - All options keep their names and defaults.
-- The `scan` and `scanError` events carry the same `event.detail`, and every callback (`onScan`, `onScanError`, `onScanButtonLongPress`, `onKeyDetect`, `onKeyProcess`, `onPaste`) gets the same arguments.
+- The `scan` and `scanError` events carry the same `event.detail`, and every callback (`onScan`, `onScanError`, `onScanButtonLongPress`, `onKeyDetect`, `onKeyProcess`, `onPaste`) gets the same arguments. The `scanButtonLongPress` event is new; see [Smaller differences](#smaller-differences-mostly-bug-fixes).
 - `require()` returns the `onScan` object, and the UMD bundle still works as an AMD module or a browser global.
 
 ## 3. What changes
@@ -52,6 +52,8 @@ npm install onscan-next
 - `ignoreIfFocusOn` accepts DOM elements. onScan.js documented this but threw a `SyntaxError` on every key press when given one.
 - `detachFrom()` removes the listeners when `captureEvents` is `true`. onScan.js left them attached, and every later key press threw a `TypeError`.
 - On an element that is not attached, `detachFrom()` does nothing and `isScanInProgressFor()` returns `false`. onScan.js threw a `TypeError` for both. `getOptions()` and `setOptions()` still throw, now with a readable message.
+- A long press of the scan button also dispatches a `scanButtonLongPress` event on the element, right after `onScanButtonLongPress` runs. onScan.js listed this event in its README but never dispatched it, so long presses reached only the callback.
+- `onScanButtonLongPress` runs with `this` set to the element, like the other callbacks, and still receives the element as its first argument. onScan.js called it with `this` set to `window`. `detachFrom()` while the scan button is held cancels the pending long press; onScan.js still fired it.
 - `onKeyProcess` fires only for characters added to the scan code. onScan.js also called it for prefix and suffix keys (with `undefined`) and for non-character keys (with `''`).
 - When `event.key` is empty, numpad digits decode to strings (`'1'`) instead of numbers (`1`), and numpad operators (keyCodes 106–111) are skipped instead of decoding to the letters `j`–`o`. This mostly affects `simulate()` with keyCode arrays. Letters and digits decode exactly as before.
 - Scanner state is private. onScan.js stored it on the element as `scannerDetectionData`; use `getOptions()`, `isAttachedTo()` and `isScanInProgressFor()` instead.
@@ -59,7 +61,7 @@ npm install onscan-next
 
 ## 4. TypeScript
 
-Types ship with the package. Delete `@types/onscan.js`: `import onScan from 'onscan-next'` is typed, and so are `scan` and `scanError` listeners on `document` and on elements.
+Types ship with the package. Delete `@types/onscan.js`: `import onScan from 'onscan-next'` is typed, and so are `scan`, `scanError` and `scanButtonLongPress` listeners on `document` and on elements.
 
 Some exported type names changed:
 
@@ -77,6 +79,7 @@ Some types are corrected or stricter:
 
 - `ignoreIfFocusOn` accepts a selector, an element, an array of either, or `false`. It was typed as `boolean` ([#36], [#45]).
 - `scanButtonKeyCode` is `number | false`. It was typed as `boolean`.
+- `onScanButtonLongPress` receives the element as its argument and as `this` (was typed with neither). Callbacks without parameters still compile.
 - `onScanError` receives a `ScanError` (was `any`), `keyCodeMapper` must return `string | null` (was `any`), and `decodeKeyEvent()` returns `string | null` (was `any`).
 - The keydown option is `reactToKeydown`. `@types/onscan.js` spelled it `reactToKeyDown`, which onScan.js never read, so setting it had no effect. TypeScript now reports it as an unknown option. Delete it; rename it only if you really want keydown scanning turned off.
 
