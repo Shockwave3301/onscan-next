@@ -133,7 +133,7 @@ The following options can be set when initializing onscan-next:
 | Option                  | Default                      | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | ----------------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | onScan                  | function(code, qty){}        | Callback after successful scan. <br><br>Arguments: <br> - `code` - [string] scanned code <br> - `qty` - [integer] quantity                                                                                                                                                                                                                                                                                                                                      |
-| onScanButtonLongPress   | function(){}                 | Callback after the scan button was pressed and held down for a time defined in `scanButtonLongPressThreshold`. This can only be used if the scan button behaves as a key itself and the `scanButtonKeyCode` option is set.                                                                                                                                                                                                                                      |
+| onScanButtonLongPress   | function(element){}          | Callback after the scan button was pressed and held down for `scanButtonLongPressTime` ms. This can only be used if the scan button behaves as a key itself and the `scanButtonKeyCode` option is set. A `scanButtonLongPress` event is dispatched as well. <br><br>Arguments: <br> - `element` - [DOMElement] the element onScan is attached to (also available as `this`)                                                                                     |
 | onScanError             | function(debug){}           | Callback after a scanned string being dropped due to restrictions. <br><br>Arguments: <br> - `debug` - [object] plain object with various debug data                                                                                                                                                                                                                                                                                                           |
 | onKeyDetect             | function(keyCode, event){}   | Callback after every detected key event. Further event processing can be canceled by returning `false` from this callback - e.g. to exclude certain key events completely. <br><br>Arguments: <br> - `keyCode` - [integer] detected key code <br> - `event` [KeyboardEvent] complete event instance                                                                                                                                                           |
 | onKeyProcess            | function(char, event){}      | Callback after a key event was decoded and found to be part of a potential scan code. Keep in mind, that at this point it is not yet known whether it's a scan or not - it's just a valid character being processed and decoded. <br><br>Arguments: <br> - `char` - [string] decoded character<br> - `event` [KeyboardEvent] complete event instance                                                                                                          |
@@ -178,17 +178,18 @@ document.addEventListener('scanError', function (e) {
 
 You can also handle scans via **option callbacks** instead of (or in addition to) DOM events. Note that callbacks and events have **different signatures**:
 
-|       | Callback (option)       | DOM Event (`addEventListener`)              |
-| ----- | ----------------------- | ------------------------------------------- |
-| Scan  | `onScan(scanCode, qty)` | `event.detail.scanCode`, `event.detail.qty` |
-| Error | `onScanError(debugObj)` | `event.detail` (same debug object)          |
+|            | Callback (option)                | DOM Event (`addEventListener`)                  |
+| ---------- | -------------------------------- | ----------------------------------------------- |
+| Scan       | `onScan(scanCode, qty)`          | `event.detail.scanCode`, `event.detail.qty`     |
+| Error      | `onScanError(debugObj)`          | `event.detail` (same debug object)              |
+| Long press | `onScanButtonLongPress(element)` | `scanButtonLongPress` event (no `event.detail`) |
 
 ```javascript
 onScan.attachTo(document, {
     // Callback style — arguments passed directly
     onScan: function(code, qty) { ... },
     onScanError: function(debug) { ... },
-    onScanButtonLongPress: function() { ... },
+    onScanButtonLongPress: function(element) { ... },
     // These callbacks have no corresponding DOM event:
     onKeyDetect: function(keyCode, event) { ... },
     onKeyProcess: function(char, event) { ... },

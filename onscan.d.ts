@@ -2,8 +2,11 @@ export interface OnScanOptions {
     /** Callback after successful scan. */
     onScan?: (this: Element, sScanned: string, iQty: number) => void;
 
-    /** Callback after the scan button was pressed and held down. */
-    onScanButtonLongPress?: (this: Element) => void;
+    /**
+     * Callback after the scan button was pressed and held down for `scanButtonLongPressTime` ms.
+     * Receives the element onScan is attached to, which is also `this`.
+     */
+    onScanButtonLongPress?: (this: Element, oDomElement: Element) => void;
 
     /** Callback after a scanned string was dropped due to restrictions. */
     onScanError?: (this: Element, oDebug: ScanError) => void;
@@ -134,10 +137,12 @@ declare global {
     interface DocumentEventMap {
         scan: OnScanScanEvent;
         scanError: OnScanErrorEvent;
+        scanButtonLongPress: CustomEvent<null>;
     }
     interface HTMLElementEventMap {
         scan: OnScanScanEvent;
         scanError: OnScanErrorEvent;
+        scanButtonLongPress: CustomEvent<null>;
     }
 }
 
