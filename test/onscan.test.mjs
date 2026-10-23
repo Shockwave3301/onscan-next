@@ -375,9 +375,62 @@ describe('onScan', () => {
             vi.useRealTimers();
         });
 
+        it('should pass the element to onScanButtonLongPress as this and as its argument', () => {
+            vi.useFakeTimers();
+            const div = document.createElement('div');
+            document.body.appendChild(div);
+            let receivedThis = null;
+            let receivedArg = null;
+            onScan.attachTo(div, {
+                scanButtonKeyCode: 0xE0,
+                onScanButtonLongPress: function (el) {
+                    receivedThis = this;
+                    receivedArg = el;
+                },
+            });
+
+            simulateKeydowns(div, [{ keyCode: 0xE0, key: 'Unidentified' }]);
+            vi.advanceTimersByTime(500);
+            expect(receivedThis).toBe(div);
+            expect(receivedArg).toBe(div);
+
+            onScan.detachFrom(div);
+            document.body.removeChild(div);
+            vi.useRealTimers();
+        });
+
+        it('should dispatch scanButtonLongPress event on the element after timeout', () => {
+            vi.useFakeTimers();
+            const div = document.createElement('div');
+            document.body.appendChild(div);
+            const listener = vi.fn();
+            div.addEventListener('scanButtonLongPress', listener);
+            onScan.attachTo(div, {
+                scanButtonKeyCode: 0xE0,
+                scanButtonLongPressTime: 500,
+            });
+
+            simulateKeydowns(div, [{ keyCode: 0xE0, key: 'Unidentified' }]);
+            vi.advanceTimersByTime(499);
+            expect(listener).not.toHaveBeenCalled();
+
+            vi.advanceTimersByTime(1);
+            expect(listener).toHaveBeenCalledTimes(1);
+            const event = listener.mock.calls[0][0];
+            expect(event).toBeInstanceOf(CustomEvent);
+            expect(event.target).toBe(div);
+            expect(event.detail).toBeNull();
+
+            onScan.detachFrom(div);
+            document.body.removeChild(div);
+            vi.useRealTimers();
+        });
+
         it('should cancel long press timer on keyup', () => {
             vi.useFakeTimers();
             const longPressCb = vi.fn();
+            const listener = vi.fn();
+            document.addEventListener('scanButtonLongPress', listener);
             onScan.attachTo(document, {
                 scanButtonKeyCode: 0xE0,
                 scanButtonLongPressTime: 500,
@@ -390,8 +443,32 @@ describe('onScan', () => {
 
             vi.advanceTimersByTime(600);
             expect(longPressCb).not.toHaveBeenCalled();
+            expect(listener).not.toHaveBeenCalled();
 
+            document.removeEventListener('scanButtonLongPress', listener);
             onScan.detachFrom(document);
+            vi.useRealTimers();
+        });
+
+        it('should cancel long press timer on detachFrom', () => {
+            vi.useFakeTimers();
+            const longPressCb = vi.fn();
+            const listener = vi.fn();
+            document.addEventListener('scanButtonLongPress', listener);
+            onScan.attachTo(document, {
+                scanButtonKeyCode: 0xE0,
+                scanButtonLongPressTime: 500,
+                onScanButtonLongPress: longPressCb,
+            });
+
+            simulateKeydowns(document, [{ keyCode: 0xE0, key: 'Unidentified' }]);
+            onScan.detachFrom(document);
+
+            vi.advanceTimersByTime(600);
+            expect(longPressCb).not.toHaveBeenCalled();
+            expect(listener).not.toHaveBeenCalled();
+
+            document.removeEventListener('scanButtonLongPress', listener);
             vi.useRealTimers();
         });
     });
