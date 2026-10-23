@@ -6,6 +6,14 @@
 
 <p align="center">Framework-agnostic JavaScript scan-events for hardware barcode scanners.</p>
 
+## Coming from onScan.js?
+
+onscan-next is a maintained, API-compatible fork of [onScan.js](https://github.com/axenox/onscan.js), with `event.key` decoding (hyphens, colons, symbols, non-US layouts) and bundled TypeScript types.
+
+1. Install: `npm uninstall onscan.js @types/onscan.js && npm install onscan-next`
+2. Change the import: `import onScan from 'onscan-next';`
+3. Check the few differences in [MIGRATION.md](MIGRATION.md).
+
 ## Quick start
 
 1. Install via `npm install onscan-next`
@@ -37,7 +45,7 @@ pnpm add onscan-next
 **Via CDN (no build step):**
 
 ```html
-<script src="https://unpkg.com/onscan-next/dist/onscan.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/onscan-next/dist/onscan.umd.min.js"></script>
 <script>
     onScan.attachTo(document);
 </script>
