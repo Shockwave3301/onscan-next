@@ -12,7 +12,7 @@ export interface OnScanOptions {
      * Callback after every detected key event.
      * Return `false` to cancel further processing of this event.
      */
-    onKeyDetect?: (this: Element, iKeyCode: number, oEvent: KeyboardEvent) => void | false;
+    onKeyDetect?: (this: Element, iKeyCode: number, oEvent: KeyboardEvent) => void | boolean;
 
     /** Callback after a key event was decoded and found to be part of a potential scan code. */
     onKeyProcess?: (this: Element, sChar: string, oEvent: KeyboardEvent) => void;
@@ -100,16 +100,16 @@ interface OnScan {
      * Initializes listening for scan events on the given DOM element.
      * Use `document` to capture all events.
      */
-    attachTo(oDomElement: Element, oOptions?: OnScanOptions): OnScan;
+    attachTo(oDomElement: Node, oOptions?: OnScanOptions): OnScan;
 
     /** Removes all scanner detection logic from the given DOM element. */
-    detachFrom(oDomElement: Element): void;
+    detachFrom(oDomElement: Node): void;
 
     /** Returns the current options for the given DOM element. */
-    getOptions(oDomElement: Element): OnScanOptions;
+    getOptions(oDomElement: Node): OnScanOptions;
 
     /** Merges new options into the existing options for the given DOM element. */
-    setOptions(oDomElement: Element, oOptions: Partial<OnScanOptions>): OnScan;
+    setOptions(oDomElement: Node, oOptions: Partial<OnScanOptions>): OnScan;
 
     /**
      * Decodes a keyboard event into a printable character.
@@ -121,13 +121,24 @@ interface OnScan {
      * Simulates a scan programmatically.
      * Accepts a decoded string, an array of key codes, or an array of KeyboardEvent init objects.
      */
-    simulate(oDomElement: Element, mStringOrArray: string | Array<number | KeyboardEventInit>): OnScan;
+    simulate(oDomElement: Node, mStringOrArray: string | Array<number | KeyboardEventInit>): OnScan;
 
     /** Returns `true` if the scanner is currently in the middle of a scan sequence. */
-    isScanInProgressFor(oDomElement: Element): boolean;
+    isScanInProgressFor(oDomElement: Node): boolean;
 
     /** Returns `true` if onScan is attached to the given DOM element. */
-    isAttachedTo(oDomElement: Element): boolean;
+    isAttachedTo(oDomElement: Node): boolean;
+}
+
+declare global {
+    interface DocumentEventMap {
+        scan: OnScanScanEvent;
+        scanError: OnScanErrorEvent;
+    }
+    interface HTMLElementEventMap {
+        scan: OnScanScanEvent;
+        scanError: OnScanErrorEvent;
+    }
 }
 
 declare const onScan: OnScan;
