@@ -21,7 +21,7 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Shockwave3301/onScan.git"
+        "url": "git+https://github.com/Shockwave3301/onscan-next.git"
     },
     "keywords": [
         "barcode",
@@ -41,9 +41,9 @@
     "author": "Shakhbulat Gazgireev",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/Shockwave3301/onScan/issues"
+        "url": "https://github.com/Shockwave3301/onscan-next/issues"
     },
-    "homepage": "https://github.com/Shockwave3301/onScan",
+    "homepage": "https://github.com/Shockwave3301/onscan-next",
     "engines": {
         "node": ">=20"
     },

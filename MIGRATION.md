@@ -88,7 +88,7 @@ Some types are corrected or stricter:
 - [ ] If you have a custom `keyCodeMapper`, check that it still needs every special case, and that any check for `''` from `decodeKeyEvent()` now checks for `null`
 - [ ] If you compare `scanError` messages or read `scannerDetectionData`, update that code
 
-Getting a different result after switching? [Open an issue](https://github.com/Shockwave3301/onScan/issues) with your scanner model and the `onKeyDetect` output for one scan.
+Getting a different result after switching? [Open an issue](https://github.com/Shockwave3301/onscan-next/issues) with your scanner model and the `onKeyDetect` output for one scan.
 
 [#15]: https://github.com/axenox/onscan.js/issues/15
 [#19]: https://github.com/axenox/onscan.js/issues/19
