@@ -6,6 +6,14 @@
 
 <p align="center">Framework-agnostic JavaScript scan-events for hardware barcode scanners.</p>
 
+## Coming from onScan.js?
+
+onscan-next is a maintained, API-compatible fork of [onScan.js](https://github.com/axenox/onscan.js), with `event.key` decoding (hyphens, colons, symbols, non-US layouts) and bundled TypeScript types.
+
+1. Install: `npm uninstall onscan.js @types/onscan.js && npm install onscan-next`
+2. Change the import: `import onScan from 'onscan-next';`
+3. Check the few differences in [MIGRATION.md](MIGRATION.md).
+
 ## Quick start
 
 1. Install via `npm install onscan-next`
@@ -37,7 +45,7 @@ pnpm add onscan-next
 **Via CDN (no build step):**
 
 ```html
-<script src="https://unpkg.com/onscan-next/dist/onscan.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/onscan-next/dist/onscan.umd.min.js"></script>
 <script>
     onScan.attachTo(document);
 </script>
@@ -231,7 +239,7 @@ Background: Barcode scanners operating in keyboard-mode (as opposed to clipboard
 If you do not have your scanner at hand, you can simulate keyboard events programmatically via `onScan.simulate()`. You can pass the desired scan code in the following formats:
 
 - a string - in this case no keyCode decoding is done and the code is merely validated against constraints like minLength, etc.
-- an array of keyCodes (e.g. `[70,71,80]`) - will produce `keydown` events with corresponding `keyCode` properties. NOTE: these events will have empty `key` properties, so decoding may yield different results than with native events.
+- an array of keyCodes (e.g. `[70,71,80]`) - will produce `keydown` events with corresponding `keyCode` properties and an empty `key`. Decoding then falls back to the keyCode: letters (always lowercase, since no `shiftKey` is set), digits and numpad digits come through, every other keyCode is skipped. `[70,71,80]` yields `fgp`. Use event objects (below) to simulate uppercase letters or symbols.
 - an array of objects (e.g. `[{keyCode: 70, key: "F", shiftKey: true}, {keyCode: 71, key: "g"}]`) - this way almost any event can be simulated exactly, but it's a lot of work to do.
 
 Hint: use the `onKeyDetect` checkbox in the playground to get a full dump of each keyboard event an just paste them in your simulation code.
