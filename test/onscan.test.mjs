@@ -111,6 +111,19 @@ describe('onScan', () => {
             document.body.removeChild(div);
         });
 
+        it('should decode raw keyCode arrays via the keyCode fallback', () => {
+            let scannedCode = null;
+            onScan.attachTo(document, {
+                minLength: 3,
+                onScan: (code) => {
+                    scannedCode = code;
+                },
+            });
+            // letters, digits and numpad digits decode; numpad "*" (106) and "-" (189) are skipped
+            onScan.simulate(document, [70, 71, 80, 49, 97, 106, 189, 13]);
+            expect(scannedCode).toBe('fgp11');
+        });
+
         it('should trigger scanError for codes shorter than minLength', () => {
             let errorData = null;
             onScan.attachTo(document, {
