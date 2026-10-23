@@ -49,3 +49,25 @@ onScan.detachFrom(document.body);
 
 // event detail types
 const detail: ScanEventDetail = { scanCode: 'ABC', qty: 1 };
+
+// attaching to document (not an Element), as in the README
+onScan.attachTo(document, {
+    suffixKeyCodes: [13],
+    // returning any boolean is fine; only `false` cancels processing
+    onKeyDetect: (iKeyCode) => iKeyCode !== 16,
+});
+onScan.simulate(document, [65, 66, 67, 13]);
+const docInProgress: boolean = onScan.isScanInProgressFor(document);
+onScan.detachFrom(document);
+
+// scan events are typed on document and on elements
+document.addEventListener('scan', (e) => {
+    const code: string = e.detail.scanCode;
+    const qty: number = e.detail.qty;
+});
+document.addEventListener('scanError', (e) => {
+    const err: ScanError = e.detail;
+});
+document.body.addEventListener('scan', (e) => {
+    const code: string = e.detail.scanCode;
+});
