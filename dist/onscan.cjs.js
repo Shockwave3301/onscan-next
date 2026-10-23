@@ -84,10 +84,11 @@ const onScan = {
         }
         domElement.removeEventListener('keydown', this._handleKeyDown, capture);
 
-        // clear any pending scan validation timer
+        // clear any pending scan validation and long press timers
         if (data.vars.testTimer) {
             clearTimeout(data.vars.testTimer);
         }
+        clearTimeout(data.vars.longPressTimer);
 
         // clearing data off element
         scannerDataMap.delete(domElement);
@@ -354,11 +355,10 @@ const onScan = {
         // If it's just the button of the scanner, ignore it and wait for the real input
         if (options.scanButtonKeyCode !== false && keyCode === options.scanButtonKeyCode) {
             if (!vars.longPressed) {
-                vars.longPressTimer = setTimeout(
-                    options.onScanButtonLongPress,
-                    options.scanButtonLongPressTime,
-                    this,
-                );
+                vars.longPressTimer = setTimeout(() => {
+                    options.onScanButtonLongPress.call(this, this);
+                    this.dispatchEvent(new CustomEvent('scanButtonLongPress'));
+                }, options.scanButtonLongPressTime);
                 vars.longPressed = true;
             }
             return;
